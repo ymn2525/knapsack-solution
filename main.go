@@ -83,4 +83,8 @@ func main() {
 	fmt.Printf("最大価値: %v\n", max_value)
 	fmt.Printf("容量: %v\n", max_size)
 
+	// 出力結果
+	// 品物: [ 1, 2, 3, 8, 9, 10, 12, 13, 14, 15 ]
+	// 最大価値: 64
+	// 容量: 45
 }
