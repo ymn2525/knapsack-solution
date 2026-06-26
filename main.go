@@ -75,8 +75,11 @@ func main() {
 		}
 	}
 	
-	fmt.Print("品物: ")
-	fmt.Println(max_items)
+	fmt.Printf("品物: [ %v", max_items[0]+1)
+	for _, index := range max_items[1:] {
+		fmt.Printf(", %v", index+1)
+	}
+	fmt.Println(" ]")
 	fmt.Printf("最大価値: %v\n", max_value)
 	fmt.Printf("容量: %v\n", max_size)
 
