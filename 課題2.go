@@ -7,15 +7,21 @@ import (
 	//"time"
 )
 
+type Item struct {
+	size int
+	value int
+}
+
 func main() {
 	// ナップサックの容量
 	W := 45
 
 	// 品物の数
-	var n int = 18
+	var N int = 18
 
 	// 品物の配列{容量, 値段}
-	items := [][]int{
+	items := []Item{
+		{W+1, -1},
 		{4, 6},
 		{8, 12},
 		{3, 4},
@@ -35,21 +41,36 @@ func main() {
 		{11, 14},
 		{8, 9},
 	}
+	// 動的計画法の実装
 	
-	dp := make([][]int, n+1)
-	for i := 0; i < n+1; i++ {
+	// 解計算用テーブルの作成
+	// Go言語の仕様により、初期化時の要素は全て0
+	dp := make([][]int, N+1)
+	for i := 0; i < N+1; i++ {
 		dp[i] = make([]int, W+1)
 	}
 
-	for i := 0; i < n; i++ {
-		for w := 0; w <= W; w++ {
-			if w >= items[i][0] {
-				dp[i+1][w] = max(dp[i][w-items[i][0]] + items[i][1], dp[i][w])
+	for n := 1; n < N+1; n++ {
+		for w := 1; w < W+1; w++ {
+			if w >= items[n].size  {
+				fmt.Println(dp[n-1][1:])
+				fmt.Println(dp[n][1:])
+				fmt.Printf("品物%d%v, 容量上限%dのとき、w >= items[n].size = %tです\n", n, items[n], w, w >= items[n].size)
+				fmt.Printf("1マス上の価値は%d, 品物%dを加えた価値はdp[%d][%d] + %d = %dです\n", dp[n-1][w], n, n-1, w-items[n].size,items[n].value, dp[n-1][w-items[n].size]+items[n].value)
+				fmt.Println()
+				dp[n][w] = max(dp[n-1][w], dp[n-1][w-items[n].size]+items[n].value)
 			}else{
-				dp[i+1][w] = dp[i][w]
+				dp[n][w] = dp[n-1][w]
 			}
 		}
 	}
-	fmt.Println(dp[n][W])
 
+
+	for i, list := range dp[1:] {
+		fmt.Printf("%2d : ", i+1)
+		for _, l := range list {
+			fmt.Printf("%3d", l)
+		}
+		fmt.Println()
+	}
 }
