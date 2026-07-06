@@ -1,5 +1,4 @@
 // 方針: 動的計画法で解く
-// 参考: https://qiita.com/drken/items/a5e6fe22863b7992efdb
 package main
 
 import (
@@ -8,20 +7,18 @@ import (
 )
 
 type Item struct {
-	size int
+	size int // 品物の
 	value int
 }
 
-func main() {
-	// ナップサックの容量
-	W := 45
 
-	// 品物の数
-	var N int = 18
+func main() {
+	// ナップサックの容量W, 品物の数N
+	W, N := 45, 18
 
 	// 品物の配列{容量, 値段}
 	items := []Item{
-		{W+1, -1}, // パディング
+		{0, 0}, // パディング
 		{4, 6},
 		{8, 12},
 		{3, 4},
@@ -44,41 +41,64 @@ func main() {
 	// 動的計画法の実装
 	
 	// 解計算用テーブルの作成
-	// Go言語の仕様により、初期化時の要素は全て0
-	dp := make([][][]int, N+1)
+	dp := make([][]int, N+1)
 	for i := 0; i < N+1; i++ {
-		dp[i] = make([][]int, W+1)
+		dp[i] = make([]int, W+1)
+	}
+
+	// dp表において、重さに対応した表。次のdp表を作る過程で変化していく。
+	// wが1~Wの場合のitemリスト。1つのwに対してn個配列を用意しないでいい理由は、次のdp表作成の過程ではn=3のとき、n-2=1列目の情報はいらないため。
+	selected := make([][][]int, 2)
+	for i := 0; i < 2; i++ {
+		selected[i] = make([][]int, W+1)
 		for j := 0; j < W+1; j++ {
-			dp[i][j] = make([]int, 1, N+1)
+			selected[i][j] = make([]int, N+1)
 		}
 	}
+	last_selected := false
 
 	for n := 1; n < N+1; n++ {
 		for w := 1; w < W+1; w++ {
-			if w >= items[n].size  {
-				if dp[n-1][w][0] > dp[n-1][w-items[n].size][0] + items[n].value {
-					dp[n][w] = append([]int{dp[n-1][w][0]}, dp[n-1][w][1:]...)
-				}else{
-					dp[n][w] = append([]int{dp[n-1][w-items[n].size][0] + items[n].value}, dp[n-1][w-items[n].size][1:]...)
-					dp[n][w] = append(dp[n][w], n)
-				}
+			if w >= items[n].size && dp[n-1][w] <= dp[n-1][w-items[n].size] + items[n].value  {
+				dp[n][w] = dp[n-1][w-items[n].size] + items[n].value
+				copy(selected[0][w], selected[1][w-items[n].size])
+				selected[0][w][n] = n
 			}else{
-				dp[n][w] = append([]int{dp[n-1][w][0]}, dp[n-1][w][1:]...)
+				dp[n][w] = dp[n-1][w]
+				copy(selected[0][w], selected[1][w])
 			}
+			
 		}
+		last_selected = !last_selected
+		selected[0], selected[1] = selected[1], selected[0]
+	}
+  
+	var last int
+	if last_selected {
+		last = 1
+	}else{
+		last = 0
 	}
 
-	fmt.Printf("品物リスト : %v\n", dp[N][W][1:])
-	fmt.Printf("最大価値 : %d\n", dp[N][W][0])
+	fmt.Printf("DP選択品物 : ")
+	for _, item := range selected[last][W] {
+		if item != 0 {
+			fmt.Printf("%3d", item)
+		}
+	}
+	fmt.Println()
+	fmt.Printf("最大価値 : %d\n", dp[N][W])
 	fmt.Printf("容量 : %d\n", 
 		func() int {
 			var i int
 			for i = 1; i < W+1; i++ {
-				if dp[N][W][0]== dp[N][i][0] {
+				if dp[N][W] == dp[N][i] {
 					return i
 				}
 			}
 			return -1
 		}(),
 	)
+
+
 }
