@@ -1,14 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
-
-type Item struct {
-	size int
-	value int
-}
 
 func index_calc(num int) []int {
 	bin := make([]int, 18)
@@ -20,7 +14,7 @@ func index_calc(num int) []int {
 }
 
 
-func main() {
+func BruteForce() (int, int, []int) {
 
 	items := [18]Item{
 		{4, 6},
@@ -75,16 +69,9 @@ func main() {
 		}
 	}
 	
-	fmt.Printf("品物: [ %v", max_items[0]+1)
-	for _, index := range max_items[1:] {
-		fmt.Printf(", %v", index+1)
+	for i, item := range max_items {
+		max_items[i] = item + 1
 	}
-	fmt.Println(" ]")
-	fmt.Printf("最大価値: %v\n", max_value)
-	fmt.Printf("容量: %v\n", max_size)
 
-	// 出力結果
-	// 品物: [ 1, 2, 3, 8, 9, 10, 12, 13, 14, 15 ]
-	// 最大価値: 64
-	// 容量: 45
+	return max_value, max_size, max_items
 }

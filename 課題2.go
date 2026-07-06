@@ -1,18 +1,8 @@
 // 方針: 動的計画法で解く
 package main
 
-import (
-	"fmt"
-	//"time"
-)
 
-type Item struct {
-	size int // 品物の
-	value int
-}
-
-
-func main() {
+func DynamicProgramming() (int, int, []int){
 	// ナップサックの容量W, 品物の数N
 	W, N := 45, 18
 
@@ -41,9 +31,9 @@ func main() {
 	// 動的計画法の実装
 	
 	// 解計算用テーブルの作成
-	dp := make([][]int, N+1)
+	dp_table := make([][]int, N+1)
 	for i := 0; i < N+1; i++ {
-		dp[i] = make([]int, W+1)
+		dp_table[i] = make([]int, W+1)
 	}
 
 	// dp表において、重さに対応した表。次のdp表を作る過程で変化していく。
@@ -59,12 +49,12 @@ func main() {
 
 	for n := 1; n < N+1; n++ {
 		for w := 1; w < W+1; w++ {
-			if w >= items[n].size && dp[n-1][w] <= dp[n-1][w-items[n].size] + items[n].value  {
-				dp[n][w] = dp[n-1][w-items[n].size] + items[n].value
+			if w >= items[n].size && dp_table[n-1][w] <= dp_table[n-1][w-items[n].size] + items[n].value  {
+				dp_table[n][w] = dp_table[n-1][w-items[n].size] + items[n].value
 				copy(selected[0][w], selected[1][w-items[n].size])
 				selected[0][w][n] = n
 			}else{
-				dp[n][w] = dp[n-1][w]
+				dp_table[n][w] = dp_table[n-1][w]
 				copy(selected[0][w], selected[1][w])
 			}
 			
@@ -80,25 +70,14 @@ func main() {
 		last = 0
 	}
 
-	fmt.Printf("DP選択品物 : ")
-	for _, item := range selected[last][W] {
-		if item != 0 {
-			fmt.Printf("%3d", item)
-		}
-	}
-	fmt.Println()
-	fmt.Printf("最大価値 : %d\n", dp[N][W])
-	fmt.Printf("容量 : %d\n", 
-		func() int {
+	size := func() int {
 			var i int
 			for i = 1; i < W+1; i++ {
-				if dp[N][W] == dp[N][i] {
+				if dp_table[N][W] == dp_table[N][i] {
 					return i
 				}
 			}
 			return -1
-		}(),
-	)
-
-
+		}()
+	return dp_table[N][W], size, selected[last][W] 
 }
