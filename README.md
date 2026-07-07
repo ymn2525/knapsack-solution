@@ -7,8 +7,10 @@
 
 ## 実行方法
 `
-go run *.go
+go run $(ls $(ls *.go | grep -v _test.go)
 `
 
 ## benchmark計測
-未実装
+`
+go test -bench . -benchmem
+`

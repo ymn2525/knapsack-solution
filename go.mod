@@ -1,3 +1,3 @@
-module github.com/ymn2525/knapsack-solution
+module github.com/knapsack-solution
 
 go 1.26.1
