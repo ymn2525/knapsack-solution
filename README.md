@@ -15,5 +15,3 @@ go run $(ls $(ls *.go | grep -v _test.go)
 go test -bench . -benchmem
 `
 
-## git/githubの設定完了の証拠
-ローカルリポジトリで編集してリモートリポジトリにpush成功
